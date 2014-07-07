@@ -1,0 +1,14 @@
+{
+    "name": "Mfal/fpdf",
+    "type": "typo3-flow-package",
+    "description": "A collection of Fluid view helpers to generate PDF documents.",
+    "require": {
+        "typo3/fluid": "*",
+		"itbz/fpdf": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mfal\\FPDF": "Classes"
+        }
+    }
+}
