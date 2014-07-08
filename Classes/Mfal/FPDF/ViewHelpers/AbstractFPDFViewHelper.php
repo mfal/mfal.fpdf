@@ -12,7 +12,8 @@ class AbstractFPDFViewHelper extends AbstractViewHelper {
 
 	protected $argumentMappings = array(
 		'fontFamily' => array('FontFamily', 'SetFont'),
-		'fontSize' => array('FontSize', 'SetFontSize', 'unit'),
+		'fontSize' => array('FontSize', 'SetFontSize'),
+		'fontStyle' => array('FontStyle', 'SetFont'),
 		'marginLeft' => array('lMargin', 'SetLeftMargin'),
 		'marginTop' => array('tMargin', 'SetTopMargin'),
 		'marginRight' => array('rMargin', 'SetRightMargin'),
@@ -57,13 +58,15 @@ class AbstractFPDFViewHelper extends AbstractViewHelper {
 
 			$previousValues[$argumentName] = $this->fpdf()->$propertyName;
 
-			if (isset($fpdf[2])) {
-				if ($fpdf[2] === 'unit') {
-					$previousValues[$argumentName] = $previousValues[$argumentName] * $this->fpdf()->k;
-				}
+			if ($argumentName === 'fontSize') {
+				$previousValues[$argumentName] = $previousValues[$argumentName] * $this->fpdf()->k;
 			}
 
-			$this->fpdf()->$setterFunctionName($this->arguments[$argumentName]);
+			if ($argumentName === 'fontStyle') {
+				$this->fpdf()->$setterFunctionName('', $this->arguments[$argumentName]);
+			} else {
+				$this->fpdf()->$setterFunctionName($this->arguments[$argumentName]);
+			}
 		}
 
 		$result = parent::callRenderMethod();
@@ -71,7 +74,12 @@ class AbstractFPDFViewHelper extends AbstractViewHelper {
 		foreach ($this->argumentMappings as $argumentName => $fpdf) {
 			if ($this->hasArgument($argumentName)) {
 				$setterFunctionName = $fpdf[1];
-				$this->fpdf()->$setterFunctionName($previousValues[$argumentName]);
+
+				if ($argumentName === 'fontStyle') {
+					$this->fpdf()->$setterFunctionName('', $previousValues[$argumentName]);
+				} else {
+					$this->fpdf()->$setterFunctionName($previousValues[$argumentName]);
+				}
 			}
 		}
 
